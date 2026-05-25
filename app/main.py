@@ -1,22 +1,36 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+
+from app.websocket_manager import (
+    connect,
+    disconnect
+)
 
 app = FastAPI(
     title="IP Network Stream Monitor",
-    description="Real-time packet monitoring and fault detection system",
     version="1.0.0"
 )
 
 
 @app.get("/")
 def home():
+
     return {
         "status": "running",
-        "message": "IP Network Stream Monitor Backend Active"
+        "message": "WebSocket monitoring server active"
     }
 
 
-@app.get("/health")
-def health_check():
-    return {
-        "server": "healthy"
-    }
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+
+    await connect(websocket)
+
+    try:
+
+        while True:
+
+            await websocket.receive_text()
+
+    except WebSocketDisconnect:
+
+        disconnect(websocket)

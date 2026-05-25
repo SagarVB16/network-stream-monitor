@@ -1,3 +1,5 @@
+import asyncio
+
 from scapy.all import sniff
 
 from parser import parse_packet
@@ -9,6 +11,8 @@ from database import (
 
 from detector import detect_anomalies
 
+from websocket_manager import broadcast_message
+
 
 def process_packet(packet):
 
@@ -16,15 +20,32 @@ def process_packet(packet):
 
     if parsed_data:
 
-        # Store packet in database
+        # Store packet
         insert_packet(parsed_data)
 
-        # Run anomaly detection
+        # Detect anomalies
         alerts = detect_anomalies(parsed_data)
 
-        # Print alerts
+        # Send alerts
         for alert in alerts:
-            print(f"\n[ALERT] {alert}")
+
+            alert_message = (
+                f"[ALERT] {alert}"
+            )
+
+            print(alert_message)
+
+            try:
+
+                asyncio.run(
+                    broadcast_message(alert_message)
+                )
+
+            except Exception as error:
+
+                print(
+                    f"WebSocket Error: {error}"
+                )
 
         # Print packet details
         print("\n==============================")
@@ -37,17 +58,21 @@ def process_packet(packet):
         print(f"Packet Size      : {parsed_data['packet_size']} bytes")
 
         if parsed_data["tcp_flags"]:
-            print(f"TCP Flags        : {parsed_data['tcp_flags']}")
+
+            print(
+                f"TCP Flags        : "
+                f"{parsed_data['tcp_flags']}"
+            )
 
 
 def start_sniffing():
 
-    print("Starting packet monitoring system...")
+    print(
+        "Starting packet monitoring system..."
+    )
 
-    # Create database and tables
     initialize_database()
 
-    # Start live packet capture
     sniff(
         prn=process_packet,
         store=False
@@ -55,4 +80,5 @@ def start_sniffing():
 
 
 if __name__ == "__main__":
+
     start_sniffing()

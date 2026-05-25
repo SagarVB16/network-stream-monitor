@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Network Monitor Dashboard</title>
+
+    <style>
+
+        body {
+            background-color: #111;
+            color: #00ff99;
+            font-family: Arial;
+            padding: 20px;
+        }
+
+        h1 {
+            color: cyan;
+        }
+
+        #alerts {
+            margin-top: 20px;
+        }
+
+        .alert {
+            background: #222;
+            padding: 10px;
+            margin: 10px 0;
+            border-left: 5px solid red;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <h1>IP Network Stream Monitor</h1>
+
+    <h2>Live Alerts</h2>
+
+    <div id="alerts"></div>
+
+    <script>
+
+        const alertsDiv =
+            document.getElementById("alerts");
+
+        const socket = new WebSocket(
+            "ws://127.0.0.1:8000/ws"
+        );
+
+        socket.onmessage = function(event) {
+
+            const alertBox =
+                document.createElement("div");
+
+            alertBox.className = "alert";
+
+            alertBox.innerText = event.data;
+
+            alertsDiv.prepend(alertBox);
+        };
+
+    </script>
+
+</body>
+
+</html>
