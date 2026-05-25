@@ -1,5 +1,6 @@
 from collections import deque
 from datetime import datetime
+import time
 
 
 packet_times = deque(maxlen=100)
@@ -7,12 +8,18 @@ packet_times = deque(maxlen=100)
 PACKET_RATE_THRESHOLD = 30
 PACKET_SIZE_THRESHOLD = 1500
 
+JITTER_THRESHOLD = 0.05
+
+previous_packet_time = None
+
 
 def detect_anomalies(packet_data):
 
+    global previous_packet_time
+
     alerts = []
 
-    current_time = datetime.now()
+    current_time = time.time()
 
     packet_times.append(current_time)
 
@@ -21,9 +28,10 @@ def detect_anomalies(packet_data):
 
         time_difference = (
             packet_times[-1] - packet_times[0]
-        ).total_seconds()
+        )
 
         if time_difference < 1:
+
             alerts.append(
                 "High packet burst detected"
             )
@@ -35,5 +43,27 @@ def detect_anomalies(packet_data):
             f"Large packet detected: "
             f"{packet_data['packet_size']} bytes"
         )
+
+    # Jitter calculation
+    if previous_packet_time is not None:
+
+        jitter = abs(
+            current_time - previous_packet_time
+        )
+
+        packet_data["jitter"] = round(jitter, 4)
+
+        if jitter > JITTER_THRESHOLD:
+
+            alerts.append(
+                f"Jitter spike detected: "
+                f"{round(jitter, 4)} sec"
+            )
+
+    else:
+
+        packet_data["jitter"] = 0
+
+    previous_packet_time = current_time
 
     return alerts

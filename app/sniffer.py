@@ -64,6 +64,7 @@ def process_packet(packet):
         print(f"Source Port      : {parsed_data['src_port']}")
         print(f"Destination Port : {parsed_data['dst_port']}")
         print(f"Packet Size      : {parsed_data['packet_size']} bytes")
+        print(f"Jitter           : {parsed_data['jitter']} sec")
 
         if parsed_data["tcp_flags"]:
 

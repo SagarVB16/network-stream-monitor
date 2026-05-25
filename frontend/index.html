@@ -76,6 +76,12 @@
             <h2>Alerts</h2>
             <p id="alerts_count">0</p>
         </div>
+        <div class="card">
+            <h2>Current Jitter</h2>
+            <p id="current_jitter">0</p>
+        </div>
+
+        
 
     </div>
 
@@ -134,6 +140,11 @@
                 "alerts_count"
             ).innerText =
                 data.alerts;
+
+            document.getElementById(
+                "current_jitter"
+            ).innerText =
+                data.current_jitter + " sec";
         }
 
         setInterval(fetchMetrics, 1000);
