@@ -1,6 +1,6 @@
 # IP Network Stream Monitor & Fault Detector
 
-A real-time network monitoring and fault detection dashboard built using Python, FastAPI, Scapy, SQLite, WebSockets, and Chart.js.
+Real-time network traffic monitoring and anomaly detection dashboard using Scapy, FastAPI, WebSockets, SQLite, and Chart.js.
 
 This project captures live network traffic, analyzes TCP/UDP packets, stores traffic data in SQLite, detects abnormal traffic patterns, and visualizes network analytics through a live dashboard.
 
@@ -236,9 +236,6 @@ network-stream-monitor/
 
 ---
 
-# Dashboard Preview
-
-![Dashboard](screenshots/dashboard_overview.png)
 
 # Installation & Setup
 
@@ -294,6 +291,10 @@ python -m app.sniffer
 ```
 
 ---
+
+# Dashboard Preview
+
+![Dashboard](screenshots/dashboard_overview.png)
 
 ## Open Dashboard
 
