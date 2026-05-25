@@ -236,6 +236,10 @@ network-stream-monitor/
 
 ---
 
+# Dashboard Preview
+
+![Dashboard](screenshots/dashboard_overview.png)
+
 # Installation & Setup
 
 ## Step 1 — Clone Repository
