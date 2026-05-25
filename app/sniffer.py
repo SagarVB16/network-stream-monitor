@@ -13,6 +13,11 @@ from detector import detect_anomalies
 
 from websocket_manager import broadcast_message
 
+from metrics import (
+    update_metrics,
+    increment_alert_count
+)
+
 
 def process_packet(packet):
 
@@ -22,6 +27,7 @@ def process_packet(packet):
 
         # Store packet
         insert_packet(parsed_data)
+        update_metrics(parsed_data)
 
         # Detect anomalies
         alerts = detect_anomalies(parsed_data)
@@ -34,6 +40,8 @@ def process_packet(packet):
             )
 
             print(alert_message)
+
+            increment_alert_count()
 
             try:
 

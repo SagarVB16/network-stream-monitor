@@ -1,3 +1,4 @@
+from app.metrics import get_metrics
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
 from app.websocket_manager import (
@@ -34,3 +35,8 @@ async def websocket_endpoint(websocket: WebSocket):
     except WebSocketDisconnect:
 
         disconnect(websocket)
+
+@app.get("/metrics")
+def metrics_endpoint():
+
+    return get_metrics()        

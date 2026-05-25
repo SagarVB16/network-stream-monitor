@@ -9,7 +9,7 @@
 
         body {
             background-color: #111;
-            color: #00ff99;
+            color: white;
             font-family: Arial;
             padding: 20px;
         }
@@ -18,12 +18,30 @@
             color: cyan;
         }
 
+        .metrics-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            background-color: #222;
+            padding: 20px;
+            border-radius: 10px;
+            width: 200px;
+            box-shadow: 0 0 10px #000;
+        }
+
+        .card h2 {
+            color: cyan;
+        }
+
         #alerts {
-            margin-top: 20px;
+            margin-top: 30px;
         }
 
         .alert {
-            background: #222;
+            background: #300;
             padding: 10px;
             margin: 10px 0;
             border-left: 5px solid red;
@@ -37,6 +55,30 @@
 
     <h1>IP Network Stream Monitor</h1>
 
+    <div class="metrics-container">
+
+        <div class="card">
+            <h2>Total Packets</h2>
+            <p id="total_packets">0</p>
+        </div>
+
+        <div class="card">
+            <h2>TCP Packets</h2>
+            <p id="tcp_packets">0</p>
+        </div>
+
+        <div class="card">
+            <h2>UDP Packets</h2>
+            <p id="udp_packets">0</p>
+        </div>
+
+        <div class="card">
+            <h2>Alerts</h2>
+            <p id="alerts_count">0</p>
+        </div>
+
+    </div>
+
     <h2>Live Alerts</h2>
 
     <div id="alerts"></div>
@@ -46,9 +88,10 @@
         const alertsDiv =
             document.getElementById("alerts");
 
-        const socket = new WebSocket(
-            "ws://127.0.0.1:8000/ws"
-        );
+        const socket =
+            new WebSocket(
+                "ws://127.0.0.1:8000/ws"
+            );
 
         socket.onmessage = function(event) {
 
@@ -61,6 +104,39 @@
 
             alertsDiv.prepend(alertBox);
         };
+
+        async function fetchMetrics() {
+
+            const response =
+                await fetch(
+                    "http://127.0.0.1:8000/metrics"
+                );
+
+            const data =
+                await response.json();
+
+            document.getElementById(
+                "total_packets"
+            ).innerText =
+                data.total_packets;
+
+            document.getElementById(
+                "tcp_packets"
+            ).innerText =
+                data.tcp_packets;
+
+            document.getElementById(
+                "udp_packets"
+            ).innerText =
+                data.udp_packets;
+
+            document.getElementById(
+                "alerts_count"
+            ).innerText =
+                data.alerts;
+        }
+
+        setInterval(fetchMetrics, 1000);
 
     </script>
 
