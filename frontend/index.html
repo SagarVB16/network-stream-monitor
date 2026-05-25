@@ -103,6 +103,20 @@
     margin-bottom: 10px;
     box-shadow: 0 0 5px black;
 }
+#live_alerts {
+
+    margin-top: 20px;
+}
+
+.alert-card {
+
+    background-color: #330000;
+    padding: 15px;
+    border-left: 5px solid red;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-shadow: 0 0 5px black;
+}
 
     </style>
 
@@ -150,7 +164,10 @@
     
     <h2>Top Active Source IPs</h2>
 
-    <div id="top_ips"></div>    
+    <div id="top_ips"></div> 
+    <h2>Live Alerts Feed</h2>
+
+<div id="live_alerts"></div>   
 
     <div class="chart-card">
 
@@ -189,6 +206,37 @@
                 }
             }
         );
+        const socket =
+    new WebSocket(
+        "ws://127.0.0.1:8000/ws"
+    );
+
+socket.onmessage = function(event) {
+
+    const alertsDiv =
+        document.getElementById(
+            "live_alerts"
+        );
+
+    const alertCard =
+        document.createElement("div");
+
+    alertCard.className =
+        "alert-card";
+
+    alertCard.innerText =
+        event.data;
+
+    alertsDiv.prepend(alertCard);
+
+    // Keep only latest 10 alerts
+    if (alertsDiv.children.length > 10) {
+
+        alertsDiv.removeChild(
+            alertsDiv.lastChild
+        );
+    }
+};
 
         // Protocol chart
         const protocolChart = new Chart(
