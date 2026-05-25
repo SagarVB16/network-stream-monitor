@@ -1,5 +1,9 @@
 from scapy.all import sniff
 from parser import parse_packet
+from database import (
+    initialize_database,
+    insert_packet
+)
 
 
 def process_packet(packet):
@@ -8,22 +12,26 @@ def process_packet(packet):
 
     if parsed_data:
 
+        insert_packet(parsed_data)
+
         print("\n==============================")
-        print(f"Timestamp      : {parsed_data['timestamp']}")
-        print(f"Protocol       : {parsed_data['protocol']}")
-        print(f"Source IP      : {parsed_data['src_ip']}")
-        print(f"Destination IP : {parsed_data['dst_ip']}")
-        print(f"Source Port    : {parsed_data['src_port']}")
+        print(f"Timestamp       : {parsed_data['timestamp']}")
+        print(f"Protocol        : {parsed_data['protocol']}")
+        print(f"Source IP       : {parsed_data['src_ip']}")
+        print(f"Destination IP  : {parsed_data['dst_ip']}")
+        print(f"Source Port     : {parsed_data['src_port']}")
         print(f"Destination Port: {parsed_data['dst_port']}")
-        print(f"Packet Size    : {parsed_data['packet_size']} bytes")
+        print(f"Packet Size     : {parsed_data['packet_size']} bytes")
 
         if parsed_data["tcp_flags"]:
-            print(f"TCP Flags      : {parsed_data['tcp_flags']}")
+            print(f"TCP Flags       : {parsed_data['tcp_flags']}")
 
 
 def start_sniffing():
 
-    print("Starting advanced packet monitoring...")
+    print("Starting packet monitoring system...")
+
+    initialize_database()
 
     sniff(
         prn=process_packet,
