@@ -1,27 +1,47 @@
 # IP Network Stream Monitor & Fault Detector
 
-Real-time network traffic monitoring and anomaly detection dashboard using Scapy, FastAPI, WebSockets, SQLite, and Chart.js.
+Real-time network traffic monitoring and anomaly detection dashboard built using Python, FastAPI, Scapy, SQLite, WebSockets, and Chart.js.
 
-This project captures live network traffic, analyzes TCP/UDP packets, stores traffic data in SQLite, detects abnormal traffic patterns, and visualizes network analytics through a live dashboard.
+The system captures live TCP/UDP packets, performs traffic analytics, detects abnormal traffic behavior using threshold-based monitoring, and visualizes network activity through a live dashboard.
+
+---
+
+# Table of Contents
+
+- [Project Overview](#project-overview)
+- [Features](#features)
+- [System Architecture](#system-architecture)
+- [Workflow Explanation](#workflow-explanation)
+- [Technologies Used](#technologies-used)
+- [Folder Structure](#folder-structure)
+- [Dashboard Preview](#dashboard-preview)
+- [Installation & Setup](#installation--setup)
+- [Running the Project](#running-the-project)
+- [Dashboard Features](#dashboard-features)
+- [Example Fault Detection Events](#example-fault-detection-events)
+- [Future Improvements](#future-improvements)
+- [Learning Outcomes](#learning-outcomes)
+- [Author](#author)
 
 ---
 
 # Project Overview
 
-The IP Network Stream Monitor & Fault Detector is designed to simulate a lightweight network observability and monitoring platform.
+The IP Network Stream Monitor & Fault Detector is a real-time network observability and monitoring platform designed to analyze live network traffic streams.
 
-The system continuously captures live packets from the network interface, extracts important protocol-level information, stores metrics in a database, and streams analytics to a real-time dashboard.
+The system continuously captures packets from the network interface using Scapy, extracts protocol-level information, stores traffic logs in SQLite, detects abnormal traffic patterns, and streams analytics to a live monitoring dashboard.
 
 The project demonstrates concepts related to:
 
 - Network Packet Sniffing
 - Traffic Monitoring
-- Real-Time Data Streaming
 - Protocol Analysis
 - Fault/Anomaly Detection
-- Backend API Development
+- Real-Time Backend Systems
+- FastAPI API Development
 - WebSocket Communication
 - Dashboard Visualization
+- Network Analytics
 
 ---
 
@@ -29,54 +49,54 @@ The project demonstrates concepts related to:
 
 ## Real-Time Packet Sniffing
 - Captures live TCP and UDP packets using Scapy
-- Extracts packet metadata from network streams
-- Monitors incoming network traffic continuously
+- Continuously monitors network traffic streams
+- Extracts real-time packet metadata
 
 ## Protocol Parsing
-- Parses:
-  - Source IP
-  - Destination IP
-  - Source Port
-  - Destination Port
-  - Packet Size
-  - TCP Flags
-  - Protocol Type
+The parser extracts:
+- Source IP
+- Destination IP
+- Source Port
+- Destination Port
+- Packet Size
+- Protocol Type
+- TCP Flags
 
 ## SQLite Packet Logging
-- Stores captured packet data into SQLite database
-- Maintains persistent packet logs
-- Enables analytics querying
+- Stores packet logs persistently
+- Maintains historical traffic records
+- Enables analytics queries
 
 ## Real-Time Dashboard
-- Live monitoring dashboard using HTML, CSS, JavaScript, and Chart.js
-- Displays:
-  - Total packets
-  - TCP packets
-  - UDP packets
-  - Protocol distribution
-  - Packet traffic trends
+The dashboard provides:
+- Total packet monitoring
+- TCP packet monitoring
+- UDP packet monitoring
+- Traffic visualization
+- Protocol analytics
 
 ## Protocol Distribution Analytics
-- Displays TCP vs UDP packet analytics
-- Visualized using pie charts
+- Displays TCP vs UDP traffic distribution
+- Uses Chart.js pie chart visualization
 
 ## Traffic Visualization
-- Real-time packet traffic graph
-- Dynamic chart updates
+- Live packet traffic graph
+- Real-time dashboard updates
+- Dynamic analytics rendering
 
 ## Top Active Source IP Analytics
-- Detects most active traffic-generating IP addresses
+- Identifies top traffic-generating IP addresses
 - Uses SQL aggregation queries
 
 ## WebSocket-Based Live Alerts
-- Streams anomaly alerts to dashboard in real time
-- Event-driven architecture
+- Streams alerts in real time
+- Event-driven monitoring architecture
 
 ## Threshold-Based Fault Detection
-The system performs basic anomaly detection using:
+The system performs anomaly detection using:
 - Packet burst detection
 - Traffic spike monitoring
-- Jitter spike monitoring
+- Jitter spike detection
 - Latency anomaly detection
 
 ---
@@ -103,8 +123,8 @@ The system performs basic anomaly detection using:
                            |
                            v
                 +----------------------+
-                |  Fault Detection     |
-                |   & Analytics        |
+                | Fault Detection &    |
+                | Traffic Analytics    |
                 +----------+-----------+
                            |
           +----------------+----------------+
@@ -134,14 +154,14 @@ The system performs basic anomaly detection using:
 # Workflow Explanation
 
 ## Step 1 — Packet Capture
-The system captures live network traffic using Scapy.
+The system captures live network packets using Scapy raw sockets.
 
-Scapy listens to raw packets flowing through the network interface and forwards them to the processing pipeline.
+Packets flowing through the network interface are continuously monitored and forwarded to the processing pipeline.
 
 ---
 
 ## Step 2 — Packet Parsing
-Captured packets are parsed to extract useful networking information such as:
+Captured packets are parsed to extract:
 - IP addresses
 - Ports
 - Protocol types
@@ -153,44 +173,45 @@ This converts raw packets into structured packet data.
 ---
 
 ## Step 3 — Packet Logging
-Parsed packet information is stored in SQLite database for:
+Structured packet data is stored in SQLite database for:
 - persistent storage
-- analytics
-- monitoring queries
+- monitoring
+- analytics querying
 
 ---
 
 ## Step 4 — Fault Detection
-The detector module analyzes packet behavior to identify:
-- abnormal packet bursts
+The detector module analyzes traffic behavior to identify:
+- packet bursts
+- abnormal traffic spikes
 - jitter spikes
-- latency spikes
-- suspicious traffic patterns
+- latency anomalies
 
-Threshold-based logic is used for anomaly detection.
+Threshold-based monitoring logic is used for anomaly detection.
 
 ---
 
-## Step 5 — Real-Time API Layer
+## Step 5 — Backend API Layer
 FastAPI provides backend APIs for:
-- dashboard metrics
-- traffic analytics
-- top active IPs
+- metrics
+- analytics
+- dashboard updates
+- IP statistics
 
 ---
 
 ## Step 6 — WebSocket Communication
-WebSocket connections stream live alerts directly to the dashboard without requiring page refreshes.
+WebSockets stream live alerts directly to the dashboard without requiring manual refreshes.
 
 ---
 
 ## Step 7 — Dashboard Visualization
-The frontend dashboard visualizes:
-- packet metrics
+The dashboard visualizes:
+- packet counts
 - traffic trends
 - protocol distribution
-- active IP analytics
-- live alerts
+- active source IPs
+- live analytics
 
 using Chart.js and dynamic JavaScript updates.
 
@@ -201,11 +222,11 @@ using Chart.js and dynamic JavaScript updates.
 | Technology | Purpose |
 |---|---|
 | Python | Backend Development |
-| Scapy | Packet Sniffing |
 | FastAPI | Backend APIs |
+| Scapy | Packet Sniffing |
 | SQLite | Database Storage |
 | WebSockets | Real-Time Communication |
-| HTML/CSS/JavaScript | Frontend Dashboard |
+| HTML/CSS/JavaScript | Dashboard UI |
 | Chart.js | Data Visualization |
 
 ---
@@ -222,12 +243,14 @@ network-stream-monitor/
 │   ├── parser.py
 │   ├── detector.py
 │   ├── database.py
-│   ├── websocket_manager.py
+│   ├── metrics.py
+│   └── websocket_manager.py
 │
-├── frontend/
+├── dashboard/
 │   └── index.html
 │
 ├── screenshots/
+│   └── dashboard_overview.png
 │
 ├── requirements.txt
 ├── README.md
@@ -236,13 +259,18 @@ network-stream-monitor/
 
 ---
 
+# Dashboard Preview
+
+![Dashboard](screenshots/dashboard_overview.png)
+
+---
 
 # Installation & Setup
 
 ## Step 1 — Clone Repository
 
 ```bash
-git clone <your-github-repo-url>
+git clone <your-github-repository-url>
 cd network-stream-monitor
 ```
 
@@ -292,16 +320,12 @@ python -m app.sniffer
 
 ---
 
-# Dashboard Preview
-
-![Dashboard](screenshots/dashboard_overview.png)
-
 ## Open Dashboard
 
 Open:
 
 ```text
-frontend/index.html
+dashboard/index.html
 ```
 
 in browser.
@@ -318,9 +342,9 @@ The dashboard displays:
 - Traffic Graph
 - Protocol Distribution Pie Chart
 - Top Active Source IPs
-- Real-Time Alerts
-- Jitter Metrics
-- Latency Metrics
+- Live Alert Feed
+- Current Jitter Metrics
+- Current Latency Metrics
 
 ---
 
@@ -339,7 +363,7 @@ Examples of generated alerts:
 # Future Improvements
 
 - Advanced anomaly detection
-- Machine learning-based traffic analysis
+- AI-based traffic analytics
 - Docker deployment
 - Multi-device monitoring
 - Real latency estimation
@@ -355,18 +379,19 @@ This project helped in understanding:
 
 - Network packet analysis
 - Real-time backend systems
-- FastAPI APIs
+- FastAPI API development
 - WebSocket communication
 - Dashboard visualization
 - Database integration
 - Monitoring architectures
 - Fault detection concepts
+- Traffic analytics systems
 
 ---
 
 # Author
 
-Sagar V Bidari
+**Sagar V Bidari**
 
 Artificial Intelligence & Machine Learning Engineering Student
 
