@@ -11,6 +11,7 @@ PACKET_SIZE_THRESHOLD = 1500
 JITTER_THRESHOLD = 0.05
 
 previous_packet_time = None
+start_time = time.time()
 
 
 def detect_anomalies(packet_data):
@@ -65,5 +66,16 @@ def detect_anomalies(packet_data):
         packet_data["jitter"] = 0
 
     previous_packet_time = current_time
+
+    latency = current_time - start_time
+
+    packet_data["latency"] = round(latency, 4)
+
+    if latency > 1:
+
+        alerts.append(
+            f"High latency detected: "
+            f"{round(latency, 4)} sec"
+        )
 
     return alerts

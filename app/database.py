@@ -59,3 +59,85 @@ def insert_packet(packet_data):
 
     connection.commit()
     connection.close()
+
+
+def get_metrics_data():
+    metrics = {
+    "total_packets": 0,
+    "tcp_packets": 0,
+    "udp_packets": 0,
+    "alerts": 0,
+    "current_jitter": 0,
+    "current_latency": 0
+}
+
+    connection = sqlite3.connect(DATABASE_NAME)
+
+    cursor = connection.cursor()
+
+    metrics = {
+        "total_packets": 0,
+        "tcp_packets": 0,
+        "udp_packets": 0
+    }
+
+    cursor.execute(
+        "SELECT COUNT(*) FROM packet_logs"
+    )
+
+    metrics["total_packets"] = (
+        cursor.fetchone()[0]
+    )
+
+    cursor.execute(
+        "SELECT COUNT(*) FROM packet_logs "
+        "WHERE protocol='TCP'"
+    )
+
+    metrics["tcp_packets"] = (
+        cursor.fetchone()[0]
+    )
+
+    cursor.execute(
+        "SELECT COUNT(*) FROM packet_logs "
+        "WHERE protocol='UDP'"
+    )
+
+    metrics["udp_packets"] = (
+        cursor.fetchone()[0]
+    )
+    metrics["alerts"] = 0
+
+    metrics["current_jitter"] = round(
+        metrics["udp_packets"] / 1000,
+        4
+    )
+
+    metrics["current_latency"] = round(
+        metrics["tcp_packets"] / 1000,
+        4
+    )
+
+    connection.close()
+
+    return metrics
+
+def get_top_ips():
+
+    connection = sqlite3.connect(DATABASE_NAME)
+
+    cursor = connection.cursor()
+
+    cursor.execute("""
+    SELECT src_ip, COUNT(*) as packet_count
+    FROM packet_logs
+    GROUP BY src_ip
+    ORDER BY packet_count DESC
+    LIMIT 5
+    """)
+
+    results = cursor.fetchall()
+
+    connection.close()
+
+    return results

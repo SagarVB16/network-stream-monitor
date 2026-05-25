@@ -3,7 +3,8 @@ metrics = {
     "tcp_packets": 0,
     "udp_packets": 0,
     "alerts": 0,
-    "current_jitter": 0
+    "current_jitter": 0,
+    "current_latency": 0
 }
 
 
@@ -17,10 +18,15 @@ def update_metrics(packet_data):
     elif packet_data["protocol"] == "UDP":
         metrics["udp_packets"] += 1
 
-    # Update jitter
     metrics["current_jitter"] = (
         packet_data.get("jitter", 0)
     )
+
+    metrics["current_latency"] = (
+        packet_data.get("latency", 0)
+    )
+
+    print("UPDATED METRICS:", metrics)
 
 
 def increment_alert_count():

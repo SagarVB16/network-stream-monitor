@@ -3,13 +3,14 @@
 
 <head>
 
-    <title>Network Monitor Dashboard</title>
+    <title>IP Network Stream Monitor</title>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
 
         body {
-            background-color: #111;
+            background-color: #0a0a0a;
             color: white;
             font-family: Arial;
             padding: 20px;
@@ -26,33 +27,82 @@
         }
 
         .card {
-            background-color: #222;
+            background-color: #1e1e1e;
             padding: 20px;
-            border-radius: 10px;
-            width: 200px;
-            box-shadow: 0 0 10px #000;
+            border-radius: 12px;
+            width: 220px;
+            box-shadow: 0 0 10px black;
         }
 
         .card h2 {
             color: cyan;
         }
 
+        canvas {
+            background: #1e1e1e;
+            border-radius: 10px;
+            margin-top: 20px;
+            padding: 10px;
+
+
+
+        }
+        .charts-container {
+
+    display: flex;
+    gap: 20px;
+    margin-top: 30px;
+    align-items: flex-start;
+}
+
+.chart-card {
+
+    background-color: #1e1e1e;
+    padding: 20px;
+    border-radius: 12px;
+    flex: 2;
+    box-shadow: 0 0 10px black;
+}
+
+.pie-chart-card {
+
+    flex: 1;
+    max-width: 350px;
+}
+
+#trafficChart {
+
+    height: 300px !important;
+}
+
+#protocolChart {
+
+    max-height: 300px !important;
+}
+
         #alerts {
             margin-top: 30px;
         }
 
         .alert {
-            background: #300;
+            background-color: #330000;
+            border-left: 5px solid red;
             padding: 10px;
             margin: 10px 0;
-            border-left: 5px solid red;
         }
-        canvas {
-            background-color: #222;
-            margin-top: 20px;
-            padding: 10px;
-            border-radius: 10px;
-        }
+        #top_ips {
+
+    margin-top: 20px;
+}
+
+.ip-card {
+
+    background-color: #1e1e1e;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 0 5px black;
+}
 
     </style>
 
@@ -80,52 +130,51 @@
         </div>
 
         <div class="card">
-            <h2>Alerts</h2>
-            <p id="alerts_count">0</p>
+            <h2>Current Latency</h2>
+            <p id="current_latency">0</p>
         </div>
+        
         <div class="card">
             <h2>Current Jitter</h2>
             <p id="current_jitter">0</p>
         </div>
-
         
+        <div class="card">
+            <h2>Alerts</h2>
+            <p id="alerts">0</p>
+        </div>
 
     </div>
-    <h2>Live Jitter Graph</h2>
 
-    <canvas id="jitterChart"></canvas>
+    <div class="charts-container">
+    
+    <h2>Top Active Source IPs</h2>
 
-    <h2>Packet Traffic Graph</h2>
+    <div id="top_ips"></div>    
 
-    <canvas id="trafficChart"></canvas>
+    <div class="chart-card">
 
-    <h2>Live Alerts</h2>
+        <h2>Packet Traffic</h2>
 
-    <div id="alerts"></div>
+        <canvas id="trafficChart"></canvas>
+
+    </div>
+
+    <div class="chart-card pie-chart-card">
+
+        <h2>Protocol Distribution</h2>
+
+        <canvas id="protocolChart"></canvas>
+
+    </div>
+
+</div>
 
     <script>
 
-        const alertsDiv =
-            document.getElementById("alerts");
-        const jitterLabels = [];
-        const jitterData = [];
-
+        // Traffic chart
         const trafficLabels = [];
         const trafficData = [];
-
-        const jitterChart = new Chart(
-            document.getElementById("jitterChart"),
-            {
-                type: "line",
-                data: {
-                    labels: jitterLabels,
-                    datasets: [{
-                        label: "Jitter (sec)",
-                        data: jitterData
-                    }]
-                }
-            }
-        );
 
         const trafficChart = new Chart(
             document.getElementById("trafficChart"),
@@ -141,80 +190,155 @@
             }
         );
 
-        const socket =
-            new WebSocket(
-                "ws://127.0.0.1:8000/ws"
-            );
-
-        socket.onmessage = function(event) {
-
-            const alertBox =
-                document.createElement("div");
-
-            alertBox.className = "alert";
-
-            alertBox.innerText = event.data;
-
-            alertsDiv.prepend(alertBox);
-        };
+        // Protocol chart
+        const protocolChart = new Chart(
+            document.getElementById("protocolChart"),
+            {
+                type: "pie",
+                data: {
+                    labels: ["TCP", "UDP"],
+                    datasets: [{
+                        data: [0, 0]
+                    }]
+                }
+            }
+        );
 
         async function fetchMetrics() {
 
-            const response =
-                await fetch(
-                    "http://127.0.0.1:8000/metrics"
+            try {
+
+                const response =
+                    await fetch(
+                        "http://127.0.0.1:8000/metrics"
+                    );
+
+                const data =
+                    await response.json();
+
+                // Update cards
+                document.getElementById(
+                    "total_packets"
+                ).innerText =
+                    data.total_packets;
+
+                document.getElementById(
+                    "tcp_packets"
+                ).innerText =
+                    data.tcp_packets;
+
+                document.getElementById(
+                    "udp_packets"
+                ).innerText =
+                    data.udp_packets;
+
+                document.getElementById(
+                    "current_latency"
+                ).innerText =
+                    data.current_latency + " sec";
+
+                document.getElementById(
+                    "current_jitter"
+                ).innerText =
+                    data.current_jitter + " sec";
+
+                document.getElementById(
+                    "alerts"
+                ).innerText =
+                    data.alerts;    
+
+                // Update traffic graph
+                const currentTime =
+                    new Date().toLocaleTimeString();
+
+                trafficLabels.push(currentTime);
+
+                trafficData.push(
+                    data.total_packets
                 );
 
-            const data =
-                await response.json();
+                if (trafficLabels.length > 20) {
 
-            document.getElementById(
-                "total_packets"
-            ).innerText =
-                data.total_packets;
+                    trafficLabels.shift();
+                    trafficData.shift();
+                }
 
-            document.getElementById(
-                "tcp_packets"
-            ).innerText =
-                data.tcp_packets;
+                trafficChart.update();
 
-            document.getElementById(
-                "udp_packets"
-            ).innerText =
-                data.udp_packets;
+                // Update protocol chart
+                protocolChart.data.datasets[0].data = [
+                    data.tcp_packets,
+                    data.udp_packets
+                ];
 
-            document.getElementById(
-                "alerts_count"
-            ).innerText =
-                data.alerts;
+                protocolChart.update();
 
-            document.getElementById(
-                "current_jitter"
-            ).innerText =
-                data.current_jitter + " sec";
-            const currentTime =
-                new Date().toLocaleTimeString();
-
-            jitterLabels.push(currentTime);
-            jitterData.push(data.current_jitter);
-
-            trafficLabels.push(currentTime);
-            trafficData.push(data.total_packets);
-
-            if (jitterLabels.length > 20) {
-
-                jitterLabels.shift();
-                jitterData.shift();
-
-                trafficLabels.shift();
-                trafficData.shift();
             }
 
-            jitterChart.update();
-            trafficChart.update();
-        }
+            catch(error) {
 
+                console.log(
+                    "Metrics fetch error:",
+                    error
+                );
+            }
+        }
+        async function fetchTopIPs() {
+
+    try {
+
+        const response =
+            await fetch(
+                "http://127.0.0.1:8000/top-ips"
+            );
+
+        const data =
+            await response.json();
+
+        const topIpsDiv =
+            document.getElementById(
+                "top_ips"
+            );
+
+        topIpsDiv.innerHTML = "";
+
+        data.forEach(ip => {
+
+            const div =
+                document.createElement("div");
+
+            div.className = "ip-card";
+
+            div.innerHTML = `
+                <strong>IP:</strong> ${ip[0]}
+                <br>
+                <strong>Packets:</strong> ${ip[1]}
+            `;
+
+            topIpsDiv.appendChild(div);
+        });
+
+    }
+
+    catch(error) {
+
+        console.log(
+            "Top IP fetch error:",
+            error
+        );
+    }
+}
+
+        // Update every second
         setInterval(fetchMetrics, 1000);
+
+        // Initial fetch
+        fetchMetrics();
+
+        setInterval(fetchTopIPs, 3000);
+
+fetchTopIPs();
+        
 
     </script>
 
