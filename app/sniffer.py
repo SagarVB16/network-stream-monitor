@@ -1,31 +1,29 @@
 from scapy.all import sniff
-from scapy.layers.inet import IP, TCP, UDP
+from parser import parse_packet
 
 
 def process_packet(packet):
 
-    if IP in packet:
+    parsed_data = parse_packet(packet)
 
-        src_ip = packet[IP].src
-        dst_ip = packet[IP].dst
+    if parsed_data:
 
-        protocol = "OTHER"
+        print("\n==============================")
+        print(f"Timestamp      : {parsed_data['timestamp']}")
+        print(f"Protocol       : {parsed_data['protocol']}")
+        print(f"Source IP      : {parsed_data['src_ip']}")
+        print(f"Destination IP : {parsed_data['dst_ip']}")
+        print(f"Source Port    : {parsed_data['src_port']}")
+        print(f"Destination Port: {parsed_data['dst_port']}")
+        print(f"Packet Size    : {parsed_data['packet_size']} bytes")
 
-        if TCP in packet:
-            protocol = "TCP"
-
-        elif UDP in packet:
-            protocol = "UDP"
-
-        print(
-            f"[{protocol}] "
-            f"{src_ip} -> {dst_ip} | "
-            f"Packet Size: {len(packet)} bytes"
-        )
+        if parsed_data["tcp_flags"]:
+            print(f"TCP Flags      : {parsed_data['tcp_flags']}")
 
 
 def start_sniffing():
-    print("Starting packet capture...")
+
+    print("Starting advanced packet monitoring...")
 
     sniff(
         prn=process_packet,
